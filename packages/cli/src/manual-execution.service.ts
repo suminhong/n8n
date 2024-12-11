@@ -17,7 +17,6 @@ import type PCancelable from 'p-cancelable';
 import { Service } from 'typedi';
 
 import { Logger } from '@/logging/logger.service';
-import * as WorkflowHelpers from '@/workflow-helpers';
 
 @Service()
 export class ManualExecutionService {
@@ -80,7 +79,7 @@ export class ManualExecutionService {
 			});
 			// Execute all nodes
 
-			const startNode = WorkflowHelpers.getExecutionStartNode(data, workflow);
+			const startNode = this.getExecutionStartNode(data, workflow);
 
 			// Can execute without webhook so go on
 			const workflowExecute = new WorkflowExecute(additionalData, data.executionMode);
@@ -109,5 +108,17 @@ export class ManualExecutionService {
 				);
 			}
 		}
+	}
+
+	getExecutionStartNode(data: IWorkflowExecutionDataProcess, workflow: Workflow) {
+		let startNode;
+		if (
+			data.startNodes?.length === 1 &&
+			Object.keys(data.pinData ?? {}).includes(data.startNodes[0].name)
+		) {
+			startNode = workflow.getNode(data.startNodes[0].name) ?? undefined;
+		}
+
+		return startNode;
 	}
 }
