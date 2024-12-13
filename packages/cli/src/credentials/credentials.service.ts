@@ -65,7 +65,7 @@ export class CredentialsService {
 		user: User,
 		options: {
 			listQueryOptions?: ListQuery.Options;
-			includeScopes?: string;
+			includeScopes?: boolean;
 		} = {},
 	) {
 		const returnAll = user.hasGlobalScope('credential:list');
