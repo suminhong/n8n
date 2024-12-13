@@ -13,6 +13,19 @@ import { ENABLE_LESS_STRICT_TYPE_VALIDATION } from '../../../utils/constants';
 import { looseTypeValidationProperty } from '../../../utils/descriptions';
 import { getTypeValidationParameter, getTypeValidationStrictness } from './utils';
 
+export const getOptions = (executeFunctions: IExecuteFunctions, itemIndex: number) => {
+	return executeFunctions.getNodeParameter('options', itemIndex) as {
+		ignoreCase?: boolean;
+		looseTypeValidation?: boolean;
+	};
+};
+
+export const getConditions = (executeFunctions: IExecuteFunctions, itemIndex: number) => {
+	return executeFunctions.getNodeParameter('conditions', itemIndex, false, {
+		extractValue: true,
+	}) as boolean;
+};
+
 export class IfV2 implements INodeType {
 	description: INodeTypeDescription;
 
@@ -86,15 +99,10 @@ export class IfV2 implements INodeType {
 
 		this.getInputData().forEach((item, itemIndex) => {
 			try {
-				const options = this.getNodeParameter('options', itemIndex) as {
-					ignoreCase?: boolean;
-					looseTypeValidation?: boolean;
-				};
+				const options = getOptions(this, itemIndex);
 				let pass = false;
 				try {
-					pass = this.getNodeParameter('conditions', itemIndex, false, {
-						extractValue: true,
-					}) as boolean;
+					pass = getConditions(this, itemIndex);
 				} catch (error) {
 					if (
 						!getTypeValidationParameter(2.1)(this, itemIndex, options.looseTypeValidation) &&
